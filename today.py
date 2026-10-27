@@ -312,7 +312,12 @@ def stars_counter(data):
     Count total stars in repositories owned by me
     """
     total_stars = 0
-    for node in data: total_stars += node['node']['stargazers']['totalCount']
+    for edge in data or []:
+        node = edge.get('node') if edge else None
+        # GraphQL can return null nodes for inaccessible / ghost repos
+        if not node or not node.get('stargazers'):
+            continue
+        total_stars += node['stargazers']['totalCount']
     return total_stars
 
 
